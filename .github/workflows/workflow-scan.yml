@@ -1,14 +1,42 @@
 name: GitHub Actions Security Analysis with zizmor 🌈
 
 on:
+  workflow_dispatch: {}
+  
   push:
     branches: ["main"]
+    paths:
+      - .github/workflows/**
+    
   pull_request:
     branches: ["**"]
+    paths:
+      - .github/workflows/**
 
 jobs:
+  poutine:
+    name: poutine 🍁
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Run poutine
+        uses: boostsecurityio/poutine-action@v0.15.2
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
+          category: poutine
   zizmor:
-    name: zizmor latest via PyPI
+    name: zizmor 🌈
     runs-on: ubuntu-latest
     permissions:
       security-events: write
